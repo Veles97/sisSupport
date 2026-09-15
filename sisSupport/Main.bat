@@ -16,6 +16,7 @@ echo.
 powershell -Command "Write-Host '  [1] Повседневный софт (soft)' -ForegroundColor Green"
 powershell -Command "Write-Host '  [2] Диагностика и система (health_soft)' -ForegroundColor Green"
 powershell -Command "Write-Host '  [3] Сеть и обход блокировок (zapret)' -ForegroundColor Green"
+powershell -Command "Write-Host '  [4] Разархиваторы (arhivator)' -ForegroundColor Green"
 echo.
 powershell -Command "Write-Host '  [0] Выход' -ForegroundColor DarkGray"
 echo.
@@ -26,6 +27,7 @@ set /p "MENU_CHOICE=> "
 if "%MENU_CHOICE%"=="1" (set "CURRENT_FOLDER=soft" & goto :CategoryMenu)
 if "%MENU_CHOICE%"=="2" (set "CURRENT_FOLDER=health_soft" & goto :CategoryMenu)
 if "%MENU_CHOICE%"=="3" (set "CURRENT_FOLDER=zapret" & goto :CategoryMenu)
+if "%MENU_CHOICE%"=="4" (set "CURRENT_FOLDER=arhivator" & goto :CategoryMenu)
 if "%MENU_CHOICE%"=="0" exit /b
 
 :: Если ввели что-то другое - возвращаемся в меню
