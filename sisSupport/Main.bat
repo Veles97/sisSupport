@@ -2,6 +2,35 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
+:: =======================================================
+:: Блок фоновой проверки и подтягивания WinGet
+:: =======================================================
+where winget >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Write-Host '[⚙] WinGet не найден. Выполняется фоновая установка...' -ForegroundColor Yellow"
+
+    :: Скачивание и установка пакета без вывода логов в консоль
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "$ProgressPreference = 'SilentlyContinue';" ^
+        "$url = 'https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle';" ^
+        "$file = '$env:TEMP\winget.msixbundle';" ^
+        "Invoke-WebRequest -Uri $url -OutFile $file -UseBasicParsing;" ^
+        "Add-AppxPackage -Path $file -ErrorAction SilentlyContinue;" ^
+        "Remove-Item -Path $file -Force -ErrorAction SilentlyContinue;" >nul 2>&1
+
+    :: Обновляем PATH текущей сессии, чтобы скрипт сразу увидел winget.exe
+    set "PATH=%PATH%;%LOCALAPPDATA%\Microsoft\WindowsApps;%ProgramFiles%\WindowsApps"
+
+    :: Проверка результата
+    where winget >nul 2>&1
+    if %errorlevel% equ 0 (
+        powershell -Command "Write-Host '[✓] WinGet успешно подтянут и готов к работе!' -ForegroundColor Green"
+    ) else (
+        powershell -Command "Write-Host '[!] Не удалось установить WinGet. Скрипт перейдет на резервное скачивание.' -ForegroundColor DarkYellow"
+    )
+)
+echo.
+
 :: Определяем текущую директорию (там, где лежит main.bat)
 set "BASE_DIR=%~dp0"
 if "%BASE_DIR:~-1%"=="\" set "BASE_DIR=%BASE_DIR:~0,-1%"
