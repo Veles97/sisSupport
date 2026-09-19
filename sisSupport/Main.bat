@@ -10,13 +10,13 @@ set CURRENT_VERSION=0.1
 set REPO_AUTHOR=Veles97
 set REPO_NAME=sisSupport
 
-set VERSION_URL=https://raw.githubusercontent.com/Veles97/sisSupport/main/version.txt
+set VERSION_URL=https://github.com/Veles97/sisSupport/raw/refs/heads/main/sisSupport/version.txt
 set ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip
 
 echo Проверка обновлений...
 for /f "delims=" %%i in ('curl -s -f "%VERSION_URL%"') do set LATEST_VERSION=%%i
 
-:: [ИСПРАВЛЕНИЕ 2] Меняем :where на :CheckWinget
+
 if "%LATEST_VERSION%"=="" goto :CheckWinget
 if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
 
@@ -38,7 +38,7 @@ echo timeout /t 2 /nobreak ^^>nul >> update_helper.bat
 echo curl -L -o update.zip "%ZIP_URL%" >> update_helper.bat
 echo tar -xf update.zip >> update_helper.bat
 
-echo xcopy /Y /E /H "%REPO_NAME%-main\*" .\ >> update_helper.bat
+echo xcopy /Y /E /H "%REPO_NAME%-main\sisSupport\*" .\ >> update_helper.bat
 
 echo rmdir /S /Q "%REPO_NAME%-main" >> update_helper.bat
 echo del update.zip >> update_helper.bat
