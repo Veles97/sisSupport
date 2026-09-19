@@ -39,7 +39,7 @@ echo.
 powershell -Command "Write-Host '[⚙] Скачивание и установка Discord через winget...' -ForegroundColor Yellow"
 winget install -e --id Discord.Discord --location "%USER_PATH%" --silent --accept-package-agreements --accept-source-agreements
 if %errorlevel% neq 0 (
-    powershell -Command "Write-Host '[✗] Ошибка: Сбой установки через winget!' -ForegroundColor Red"
+    powershell -Command "Write-Host '[✗] Ошибка: Сбой установки через winget! Возможно вы не скачали или не включили zapret-discord-youtube' -ForegroundColor Red"
     pause > nul
     exit /b
 )
