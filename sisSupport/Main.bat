@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: ==========================================
 :: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
 :: ==========================================
-set "CURRENT_VERSION=0.1"
+set "CURRENT_VERSION=0.3"
 
 set "REPO_AUTHOR=Veles97"
 set "REPO_NAME=sisSupport"
