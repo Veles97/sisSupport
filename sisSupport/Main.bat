@@ -3,9 +3,20 @@ chcp 65001 > nul
 setlocal enabledelayedexpansion
 
 :: ==========================================
+:: 0. ЗАЩИТА ОТ ДУРАКА (ЗАПУСК ИЗ АРХИВА)
+:: ==========================================
+echo %~dp0 | findstr /i "Temp" >nul
+if %errorlevel%==0 (
+    powershell -Command "Write-Host '[✗] ОШИБКА: Программа запущена прямо из архива!' -ForegroundColor Red"
+    powershell -Command "Write-Host 'Пожалуйста, СНАЧАЛА РАСПАКУЙТЕ папку на рабочий стол или флешку, а потом запускайте.' -ForegroundColor Yellow"
+    pause
+    exit /b
+)
+
+:: ==========================================
 :: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
 :: ==========================================
-set "CURRENT_VERSION=0.3"
+set "CURRENT_VERSION=0.4"
 
 set "REPO_AUTHOR=Veles97"
 set "REPO_NAME=sisSupport"
@@ -41,13 +52,14 @@ if errorlevel 2 goto :CheckWinget
 :: ==========================================
 echo Подготовка к обновлению...
 
-:: Записываем скрипт-помощник одним блоком (текст на английском, чтобы не ломался CMD)
 (
 echo @echo off
 echo timeout /t 2 /nobreak ^>nul
 echo echo Updating files... Please wait.
 echo curl -L -o update.zip "%ZIP_URL%"
 echo tar -xf update.zip
+echo :: БЕЗОПАСНОЕ УДАЛЕНИЕ (только папки модулей^)
+echo rmdir /S /Q soft health_soft zapret arhivator 2^>nul
 echo xcopy /Y /E /H "%REPO_NAME%-main\sisSupport\*" .\
 echo rmdir /S /Q "%REPO_NAME%-main"
 echo del update.zip
