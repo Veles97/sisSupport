@@ -5,23 +5,33 @@ setlocal enabledelayedexpansion
 :: ==========================================
 :: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
 :: ==========================================
-set CURRENT_VERSION=0.2
+set "CURRENT_VERSION=0.1"
 
-set REPO_AUTHOR=Veles97
-set REPO_NAME=sisSupport
+set "REPO_AUTHOR=Veles97"
+set "REPO_NAME=sisSupport"
 
-set VERSION_URL=https://github.com/Veles97/sisSupport/raw/refs/heads/main/sisSupport/version.txt
-set ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip
+:: 1. Исправлена ссылка на прямую
+set "VERSION_URL=https://raw.githubusercontent.com/Veles97/sisSupport/main/sisSupport/version.txt"
+set "ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip"
 
 echo Проверка обновлений...
-for /f "delims=" %%i in ('curl -s -f "%VERSION_URL%"') do set LATEST_VERSION=%%i
+set "LATEST_VERSION="
+:: 2. Добавлен флаг -L для обхода переадресаций
+for /f "delims=" %%i in ('curl -s -f -L "%VERSION_URL%"') do set "LATEST_VERSION=%%i"
 
+:: Очистка от мусорных символов
+if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION: =!"
+if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION:	=!"
 
-if "%LATEST_VERSION%"=="" goto :updateBAT
+:: 3. ВРЕМЕННАЯ ОТЛАДКА - показывает, какие версии видит скрипт
+echo [Отладка] Ваша версия: "%CURRENT_VERSION%"
+echo [Отладка] Версия в интернете: "%LATEST_VERSION%"
+pause 
+
+if "%LATEST_VERSION%"=="" goto :CheckWinget
 if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
 
 echo.
-:updateBAT
 echo Доступна новая версия: %LATEST_VERSION% (Ваша версия: %CURRENT_VERSION%)
 choice /C YN /M "Хотите обновиться сейчас? (Y - Да, N - Нет)"
 if errorlevel 2 goto :CheckWinget
