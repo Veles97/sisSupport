@@ -5,36 +5,50 @@ setlocal enabledelayedexpansion
 :: ==========================================
 :: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
 :: ==========================================
-set "CURRENT_VERSION=0.1"
+set CURRENT_VERSION=0.2
 
-set "REPO_AUTHOR=Veles97"
-set "REPO_NAME=sisSupport"
+set REPO_AUTHOR=Veles97
+set REPO_NAME=sisSupport
 
-:: 1. Исправлена ссылка на прямую
-set "VERSION_URL=https://raw.githubusercontent.com/Veles97/sisSupport/main/sisSupport/version.txt"
-set "ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip"
+set VERSION_URL=https://github.com/Veles97/sisSupport/raw/refs/heads/main/sisSupport/version.txt
+set ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip
 
 echo Проверка обновлений...
-set "LATEST_VERSION="
-:: 2. Добавлен флаг -L для обхода переадресаций
-for /f "delims=" %%i in ('curl -s -f -L "%VERSION_URL%"') do set "LATEST_VERSION=%%i"
+for /f "delims=" %%i in ('curl -s -f "%VERSION_URL%"') do set LATEST_VERSION=%%i
 
-:: Очистка от мусорных символов
-if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION: =!"
-if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION:	=!"
 
-:: 3. ВРЕМЕННАЯ ОТЛАДКА - показывает, какие версии видит скрипт
-echo [Отладка] Ваша версия: "%CURRENT_VERSION%"
-echo [Отладка] Версия в интернете: "%LATEST_VERSION%"
-pause 
-
-if "%LATEST_VERSION%"=="" goto :CheckWinget
+if "%LATEST_VERSION%"=="" goto :updateBAT
 if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
 
 echo.
+:updateBAT
 echo Доступна новая версия: %LATEST_VERSION% (Ваша версия: %CURRENT_VERSION%)
 choice /C YN /M "Хотите обновиться сейчас? (Y - Да, N - Нет)"
 if errorlevel 2 goto :CheckWinget
+
+:: ==========================================
+:: 2. АВТООБНОВЛЕНИЕ (СОЗДАНИЕ ВРЕМЕННОГО СКРИПТА)
+:: ==========================================
+echo Подготовка к обновлению...
+
+:: Записываем скрипт-помощник одним блоком (текст на английском, чтобы не ломался CMD)
+(
+echo @echo off
+echo timeout /t 2 /nobreak ^>nul
+echo echo Updating files... Please wait.
+echo curl -L -o update.zip "%ZIP_URL%"
+echo tar -xf update.zip
+echo xcopy /Y /E /H "%REPO_NAME%-main\sisSupport\*" .\
+echo rmdir /S /Q "%REPO_NAME%-main"
+echo del update.zip
+echo echo Update finished! Starting program...
+echo timeout /t 2 ^>nul
+echo start "" "Main.bat"
+echo del "%%~f0"
+) > update_helper.bat
+
+start update_helper.bat
+exit
 
 :: [ИСПРАВЛЕНИЕ 3] Добавлена метка, на которую ссылается блок обновлений
 :CheckWinget
