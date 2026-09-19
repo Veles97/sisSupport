@@ -2,6 +2,59 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
+:: ==========================================
+:: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
+:: ==========================================
+set CURRENT_VERSION=0.1
+
+set REPO_AUTHOR=Veles97
+set REPO_NAME=sisSupport
+
+set VERSION_URL=https://raw.githubusercontent.com/Veles97/sisSupport/main/version.txt
+set ZIP_URL=https://github.com/Veles97/sisSupport/archive/refs/heads/main.zip
+
+echo Проверка обновлений...
+for /f "delims=" %%i in ('curl -s -f "%VERSION_URL%"') do set LATEST_VERSION=%%i
+
+:: [ИСПРАВЛЕНИЕ 2] Меняем :where на :CheckWinget
+if "%LATEST_VERSION%"=="" goto :CheckWinget
+if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
+
+echo.
+echo Доступна новая версия: %LATEST_VERSION% (Ваша версия: %CURRENT_VERSION%)
+choice /C YN /M "Хотите обновиться сейчас? (Y - Да, N - Нет)"
+if errorlevel 2 goto :CheckWinget
+
+:: ==========================================
+:: 2. АВТООБНОВЛЕНИЕ (СОЗДАНИЕ ВРЕМЕННОГО СКРИПТА)
+:: ==========================================
+echo Подготовка к обновлению...
+
+echo @echo off > update_helper.bat
+echo chcp 65001 ^^>nul >> update_helper.bat
+echo echo Обновление файлов... Пожалуйста, подождите. >> update_helper.bat
+echo timeout /t 2 /nobreak ^^>nul >> update_helper.bat 
+
+echo curl -L -o update.zip "%ZIP_URL%" >> update_helper.bat
+echo tar -xf update.zip >> update_helper.bat
+
+echo xcopy /Y /E /H "%REPO_NAME%-main\*" .\ >> update_helper.bat
+
+echo rmdir /S /Q "%REPO_NAME%-main" >> update_helper.bat
+echo del update.zip >> update_helper.bat
+
+echo echo Обновление завершено! Запускаем программу... >> update_helper.bat
+echo timeout /t 2 ^^>nul >> update_helper.bat
+echo start main.bat >> update_helper.bat
+
+echo del "%%~f0" >> update_helper.bat
+
+start update_helper.bat
+exit
+
+:: [ИСПРАВЛЕНИЕ 3] Добавлена метка, на которую ссылается блок обновлений
+:CheckWinget
+
 :: =======================================================
 :: Блок проверки и установки WinGet
 :: =======================================================
