@@ -24,9 +24,9 @@ if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION: =!"
 if defined LATEST_VERSION set "LATEST_VERSION=!LATEST_VERSION:	=!"
 
 :: 3. ВРЕМЕННАЯ ОТЛАДКА - показывает, какие версии видит скрипт
-echo [Отладка] Ваша версия: "%CURRENT_VERSION%"
-echo [Отладка] Версия в интернете: "%LATEST_VERSION%"
-pause 
+::echo [Отладка] Ваша версия: "%CURRENT_VERSION%"
+::echo [Отладка] Версия в интернете: "%LATEST_VERSION%"
+::pause 
 
 if "%LATEST_VERSION%"=="" goto :CheckWinget
 if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
