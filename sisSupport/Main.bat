@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: ==========================================
 :: 1. БЛОК ПРОВЕРКИ ОБНОВЛЕНИЙ
 :: ==========================================
-set CURRENT_VERSION=0.1
+set CURRENT_VERSION=0.2
 
 set REPO_AUTHOR=Veles97
 set REPO_NAME=sisSupport
@@ -17,10 +17,11 @@ echo Проверка обновлений...
 for /f "delims=" %%i in ('curl -s -f "%VERSION_URL%"') do set LATEST_VERSION=%%i
 
 
-if "%LATEST_VERSION%"=="" goto :CheckWinget
+if "%LATEST_VERSION%"=="" goto :updateBAT
 if "%CURRENT_VERSION%"=="%LATEST_VERSION%" goto :CheckWinget
 
 echo.
+:updateBAT
 echo Доступна новая версия: %LATEST_VERSION% (Ваша версия: %CURRENT_VERSION%)
 choice /C YN /M "Хотите обновиться сейчас? (Y - Да, N - Нет)"
 if errorlevel 2 goto :CheckWinget
